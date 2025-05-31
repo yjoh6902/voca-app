@@ -628,12 +628,24 @@ excited - 신난`;
                     if (!line) continue;
                     
                     if (line.startsWith('Total Achievement')) {
-                        try {
-                            const score = parseInt(line.split('|')[1].trim());
-                            achievementData.total = score || 0;
+                        const parts = line.split('|');
+                        if (parts.length > 1 && parts[1] && parts[1].trim() !== "") {
+                            try {
+                                const score = parseInt(parts[1].trim());
+                                achievementData.total = isNaN(score) ? 0 : score;
+                                achievementScore = achievementData.total;
+                            } catch (e) {
+                                // Error during parseInt or trim, achievementData.total remains default (0)
+                                // achievementScore will also be 0 based on initialization or previous value
+                                console.warn("Could not parse achievement score from line:", line, e);
+                                achievementData.total = achievementData.total || 0; // Ensure it's at least 0
+                                achievementScore = achievementData.total;
+                            }
+                        } else {
+                            // Line is "Total Achievement" or "Total Achievement | "
+                            // Default to existing or 0 if not yet set.
+                            achievementData.total = achievementData.total || 0;
                             achievementScore = achievementData.total;
-                        } catch (e) {
-                            // 파싱 실패 시 기본값 사용
                         }
                     } else if (line.toLowerCase().startsWith('day')) {
                         try {
@@ -670,12 +682,26 @@ excited - 신난`;
             if (line.includes('|')) {
                 const parts = line.split('|');
                 main = parts[0].trim();
-                if (parts[1]) {
+                if (parts.length > 1 && parts[1].trim() !== "") { // Check if there's anything after |
                     try {
-                        stats = parts[1].trim().split(',').map(x => parseInt(x) || 0);
+                        let parsedStats = parts[1].trim().split(',').map(x => parseInt(x.trim()));
+                        // Ensure it's an array of 3 numbers, default to 0 for missing/NaN values
+                        stats = [
+                            isNaN(parsedStats[0]) ? 0 : parsedStats[0],
+                            isNaN(parsedStats[1]) ? 0 : parsedStats[1],
+                            isNaN(parsedStats[2]) ? 0 : parsedStats[2]
+                        ];
+                        // If original parsing resulted in less than 3 items, fill remaining with 0
+                        if (parsedStats.length < 3) {
+                           for (let i = parsedStats.length; i < 3; i++) {
+                               stats[i] = 0;
+                           }
+                        }
                     } catch (e) {
-                        stats = [0, 0, 0];
+                        stats = [0, 0, 0]; // Default on error
                     }
+                } else {
+                    stats = [0, 0, 0]; // Default if only "|" is present or nothing after it
                 }
             }
             
