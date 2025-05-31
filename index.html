@@ -1,21 +1,4 @@
-<!-- 업로드/샘플 버튼 부분 삭제 -->
-<!-- <input type="file" ...> 및 샘플 데이터 버튼 삭제 -->
-
-<!-- 데이터 표시 영역 -->
-<pre id="vocab-data"></pre>
-
-<script>
-window.onload = function() {
-    fetch('vocabulary_list.txt')
-        .then(response => response.text())
-        .then(text => {
-            document.getElementById('vocab-data').textContent = text;
-        })
-        .catch(err => {
-            document.getElementById('vocab-data').textContent = "단어 데이터를 불러올 수 없습니다.";
-        });
-};
-</script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -365,36 +348,7 @@ window.onload = function() {
             cursor: not-allowed;
         }
 
-        .data-upload {
-            background: #fff5f5;
-            border: 2px dashed #fed7d7;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            text-align: center;
-        }
 
-        .upload-info {
-            color: #e53e3e;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .file-input {
-            margin: 10px 0;
-        }
-
-        .sample-format {
-            background: #f7fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #4facfe;
-            margin-top: 15px;
-            text-align: left;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            color: #2d3748;
-        }
 
         @media (max-width: 600px) {
             .container {
@@ -444,23 +398,7 @@ window.onload = function() {
         </div>
 
         <div class="content">
-            <!-- 데이터 업로드 섹션 (자동 로드됨) -->
-            <div class="data-upload hidden">
-                <div class="upload-info">📁 단어 데이터를 업로드하거나 샘플 데이터를 사용하세요</div>
-                <input type="file" id="fileInput" accept=".txt" class="file-input">
-                <button class="btn btn-secondary" onclick="loadSampleData()">샘플 데이터 사용</button>
-                
-                <div class="sample-format">
-                    <strong>파일 형식 예시:</strong><br>
-                    Total Achievement | 0<br><br>
-                    Day 1<br>
-                    apple - 사과<br>
-                    book - 책<br><br>
-                    Day 2<br>
-                    water - 물<br>
-                    house - 집
-                </div>
-            </div>
+
 
             <!-- 학습 설정 -->
             <div class="settings-section">
@@ -561,14 +499,11 @@ window.onload = function() {
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners();
-            loadFromStorage();
+            loadVocabularyFile(); // vocabulary_list.txt 파일 자동 로드
             updateAchievementDisplay();
         });
 
         function setupEventListeners() {
-            // 파일 업로드
-            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-            
             // 모드 변경
             document.querySelectorAll('input[name="learningMode"]').forEach(radio => {
                 radio.addEventListener('change', updateDaySelectionWidgets);
@@ -592,15 +527,18 @@ window.onload = function() {
             });
         }
 
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const content = e.target.result;
-                    parseVocabularyData(content);
-                };
-                reader.readAsText(file, 'utf-8');
+        async function loadVocabularyFile() {
+            try {
+                const response = await fetch('vocabulary_list.txt');
+                if (!response.ok) {
+                    throw new Error('vocabulary_list.txt 파일을 찾을 수 없습니다.');
+                }
+                const content = await response.text();
+                parseVocabularyData(content);
+            } catch (error) {
+                console.error('단어 파일 로드 실패:', error);
+                // 파일이 없는 경우 샘플 데이터로 대체
+                loadSampleData();
             }
         }
 
@@ -631,27 +569,6 @@ excited - 신난`;
             parseVocabularyData(sampleData);
         }
 
-        function autoLoadDefaultVocabulary() {
-            fetch('vocabulary_list.txt') // Assumes vocabulary_list.txt is in the same directory
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.statusText);
-                    }
-                    return response.text();
-                })
-                .then(text => {
-                    parseVocabularyData(text);
-                    // Optionally, indicate that default list was loaded, though parseVocabularyData already alerts.
-                    // document.getElementById('statusText').textContent = '기본 단어장을 로드했습니다.';
-                })
-                .catch(error => {
-                    console.error('Error fetching or parsing default vocabulary_list.txt:', error);
-                    document.getElementById('statusText').textContent = '기본 단어장 로드에 실패했습니다. 샘플 데이터로 시작합니다.';
-                    // Fallback to sample data if fetching default list fails
-                    loadSampleData(); 
-                });
-        }
-
         function parseVocabularyData(content) {
             try {
                 vocabulary = {};
@@ -666,24 +583,12 @@ excited - 신난`;
                     if (!line) continue;
                     
                     if (line.startsWith('Total Achievement')) {
-                        const parts = line.split('|');
-                        if (parts.length > 1 && parts[1] && parts[1].trim() !== "") {
-                            try {
-                                const score = parseInt(parts[1].trim());
-                                achievementData.total = isNaN(score) ? 0 : score;
-                                achievementScore = achievementData.total;
-                            } catch (e) {
-                                // Error during parseInt or trim, achievementData.total remains default (0)
-                                // achievementScore will also be 0 based on initialization or previous value
-                                console.warn("Could not parse achievement score from line:", line, e);
-                                achievementData.total = achievementData.total || 0; // Ensure it's at least 0
-                                achievementScore = achievementData.total;
-                            }
-                        } else {
-                            // Line is "Total Achievement" or "Total Achievement | "
-                            // Default to existing or 0 if not yet set.
-                            achievementData.total = achievementData.total || 0;
+                        try {
+                            const score = parseInt(line.split('|')[1].trim());
+                            achievementData.total = score || 0;
                             achievementScore = achievementData.total;
+                        } catch (e) {
+                            // 파싱 실패 시 기본값 사용
                         }
                     } else if (line.toLowerCase().startsWith('day')) {
                         try {
@@ -704,12 +609,12 @@ excited - 신난`;
                 
                 updateDaySelections();
                 updateAchievementDisplay();
-                saveToStorage();
                 
-                alert('단어 데이터가 성공적으로 로드되었습니다!');
+                console.log('단어 데이터가 성공적으로 로드되었습니다!');
             } catch (error) {
-                alert('파일 형식이 올바르지 않습니다.');
-                console.error(error);
+                console.error('파일 형식 오류:', error);
+                // 에러 발생 시 샘플 데이터로 대체
+                loadSampleData();
             }
         }
 
@@ -720,26 +625,12 @@ excited - 신난`;
             if (line.includes('|')) {
                 const parts = line.split('|');
                 main = parts[0].trim();
-                if (parts.length > 1 && parts[1].trim() !== "") { // Check if there's anything after |
+                if (parts[1]) {
                     try {
-                        let parsedStats = parts[1].trim().split(',').map(x => parseInt(x.trim()));
-                        // Ensure it's an array of 3 numbers, default to 0 for missing/NaN values
-                        stats = [
-                            isNaN(parsedStats[0]) ? 0 : parsedStats[0],
-                            isNaN(parsedStats[1]) ? 0 : parsedStats[1],
-                            isNaN(parsedStats[2]) ? 0 : parsedStats[2]
-                        ];
-                        // If original parsing resulted in less than 3 items, fill remaining with 0
-                        if (parsedStats.length < 3) {
-                           for (let i = parsedStats.length; i < 3; i++) {
-                               stats[i] = 0;
-                           }
-                        }
+                        stats = parts[1].trim().split(',').map(x => parseInt(x) || 0);
                     } catch (e) {
-                        stats = [0, 0, 0]; // Default on error
+                        stats = [0, 0, 0];
                     }
-                } else {
-                    stats = [0, 0, 0]; // Default if only "|" is present or nothing after it
                 }
             }
             
@@ -1082,7 +973,7 @@ excited - 신난`;
                 achievementScore++;
                 achievementData.total = achievementScore;
                 updateAchievementDisplay();
-                saveToStorage();
+                // 메모리에만 저장 (세션 동안 유지)
             } else {
                 showFeedback(`오답! 정답: ${correctAnswer}`, 'incorrect');
             }
@@ -1153,7 +1044,7 @@ excited - 신난`;
                 statsData[key] = [0, 0, 0];
             }
             statsData[key][statIdx]++;
-            saveToStorage();
+            // 메모리에만 저장 (세션 동안 유지)
         }
 
         function getStats(eng, kor) {
@@ -1172,63 +1063,6 @@ excited - 신난`;
             }
             return array;
         }
-
-        // 데이터 저장/로드
-        function saveToStorage() {
-            try {
-                localStorage.setItem('vocabApp_vocabulary', JSON.stringify(vocabulary));
-                localStorage.setItem('vocabApp_stats', JSON.stringify(statsData));
-                localStorage.setItem('vocabApp_achievement', JSON.stringify(achievementData));
-            } catch (e) {
-                console.error('저장 실패:', e);
-            }
-        }
-
-        function loadFromStorage() {
-            let vocabularyLoaded = false;
-            try {
-                const savedVocab = localStorage.getItem('vocabApp_vocabulary');
-                if (savedVocab) {
-                    const parsedVocab = JSON.parse(savedVocab);
-                    // Check if parsedVocab is not null and has entries
-                    if (parsedVocab && Object.keys(parsedVocab).length > 0) {
-                        vocabulary = parsedVocab;
-                        updateDaySelections();
-                        vocabularyLoaded = true;
-                    }
-                }
-
-                const savedStats = localStorage.getItem('vocabApp_stats');
-                if (savedStats) {
-                    statsData = JSON.parse(savedStats);
-                }
-
-                const savedAchievement = localStorage.getItem('vocabApp_achievement');
-                if (savedAchievement) {
-                    achievementData = JSON.parse(savedAchievement);
-                    achievementScore = achievementData.total || 0;
-                } else { // Ensure achievementData is initialized if not in storage
-                    achievementData = { total: 0 };
-                    achievementScore = 0;
-                }
-                
-                // If vocabulary wasn't loaded from localStorage, load the default list.
-                if (!vocabularyLoaded) {
-                    autoLoadDefaultVocabulary();
-                } else {
-                    // If vocab was loaded from storage, still need to update achievement display
-                    updateAchievementDisplay();
-                }
-
-            } catch (e) {
-                console.error('Error during loadFromStorage:', e);
-                // If there was an error loading from storage (e.g. corrupted data), try loading default.
-                autoLoadDefaultVocabulary();
-            }
-        }
-
-        // 페이지 종료 시 자동 저장
-        window.addEventListener('beforeunload', saveToStorage);
     </script>
 </body>
 </html>
