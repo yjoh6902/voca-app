@@ -1,4 +1,21 @@
-<!DOCTYPE html>
+<!-- 업로드/샘플 버튼 부분 삭제 -->
+<!-- <input type="file" ...> 및 샘플 데이터 버튼 삭제 -->
+
+<!-- 데이터 표시 영역 -->
+<pre id="vocab-data"></pre>
+
+<script>
+window.onload = function() {
+    fetch('vocabulary_list.txt')
+        .then(response => response.text())
+        .then(text => {
+            document.getElementById('vocab-data').textContent = text;
+        })
+        .catch(err => {
+            document.getElementById('vocab-data').textContent = "단어 데이터를 불러올 수 없습니다.";
+        });
+};
+</script><!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
