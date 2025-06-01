@@ -40,13 +40,13 @@
         .header {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
-            padding: 30px;
+            padding: 25px; /* MODIFIED from 30px */
             text-align: center;
             position: relative;
         }
 
         .header h1 {
-            font-size: 2.5em;
+            font-size: 2.2em; /* MODIFIED from 2.5em */
             margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
@@ -61,7 +61,7 @@
         }
 
         .content {
-            padding: 30px;
+            padding: 25px; /* MODIFIED from 30px */
         }
 
         /* 설정 화면 스타일 */
@@ -219,7 +219,7 @@
         .game-area {
             background: #f8f9ff;
             border-radius: 15px;
-            padding: 30px;
+            padding: 25px; /* MODIFIED from 30px */
             text-align: center;
             min-height: 400px;
             display: flex;
@@ -236,7 +236,7 @@
         }
 
         .word-display {
-            font-size: 2.5em;
+            font-size: 2.2em; /* MODIFIED from 2.5em */
             font-weight: bold;
             color: #2d3748;
             margin: 20px 0;
@@ -687,10 +687,10 @@
 
         // 초기화
         document.addEventListener('DOMContentLoaded', function() {
-            setupEventListeners();
-            loadStatsFromStorage(); // localStorage에서 통계/성취점수 불러오기
-            loadVocabularyFile(); // This will now correctly use/preserve loaded statsData and achievementScore
-            updateAchievementDisplay();
+            setupEventListeners(); // Set up UI event handlers
+            loadStatsFromStorage(); // Load user statistics and achievement score from localStorage
+            loadVocabularyFile(); // Load vocabulary data from file (or use sample data if not found)
+            updateAchievementDisplay(); // Display the loaded achievement score
         });
 
         function setupEventListeners() {
@@ -791,40 +791,49 @@ excited - 신난`;
 
         function parseVocabularyData(content) {
             try {
-                vocabulary = {};
-                // statsData = {}; // Do NOT reset statsData; preserve data loaded from localStorage.
-                // achievementData = { total: 0 }; // achievementScore is now the single source of truth.
+                vocabulary = {}; // Initialize vocabulary object for the current session
+                // statsData is preserved (loaded from localStorage or initialized as {}).
+                // achievementScore is preserved (loaded from localStorage or initialized to 0).
                 
-                const lines = content.split('\n');
+                const lines = content.split('\n'); // Process the vocabulary file line by line
                 let currentDay = null;
                 
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
                     
+                    // Handle the 'Total Achievement' line
                     if (line.startsWith('Total Achievement')) {
                         try {
-                            const score = parseInt(line.split('|')[1].trim());
-                            // If file specifies a total achievement, it can override the loaded one.
-                            if (!isNaN(score)) achievementScore = score;
+                            // Priority to localStorage: If 'vocab_achievement' was present in localStorage,
+                            // its value (loaded into `achievementScore` by `loadStatsFromStorage`) is kept.
+                            // The file's 'Total Achievement' is only used if no score was found in localStorage.
+                            if (localStorage.getItem('vocab_achievement') === null) {
+                                const scoreFromFile = parseInt(line.split('|')[1].trim());
+                                if (!isNaN(scoreFromFile)) {
+                                    achievementScore = scoreFromFile; // Set initial score from file
+                                }
+                            }
                         } catch (e) {
-                            // Parsing failed, achievementScore remains as loaded or its default 0.
+                            // Silently ignore errors in parsing Total Achievement; score remains as loaded or default.
                         }
+                    // Handle 'Day X' lines to categorize words
                     } else if (line.toLowerCase().startsWith('day')) {
                         try {
                             const dayNum = parseInt(line.split(' ').pop());
-                            currentDay = dayNum;
-                            vocabulary[currentDay] = [];
+                            currentDay = dayNum; // Set current day context for subsequent word lines
+                            vocabulary[currentDay] = []; // Initialize array for this day's words
                         } catch (e) {
-                            currentDay = null;
+                            currentDay = null; // Invalid day line
                         }
+                    // Handle word lines (e.g., "apple - 사과 | 0,0,0")
                     } else if (currentDay !== null && line.includes(' - ')) {
-                        const [eng, kor, stats] = parseVocabLine(line);
+                        const [eng, kor, statsFromFile] = parseVocabLine(line); // Parse individual word, meaning, and stats
                         if (eng && kor) {
-                            vocabulary[currentDay].push([eng, kor]);
+                            vocabulary[currentDay].push([eng, kor]); // Add word pair to current day's list
                             const key = `${eng}|${kor}`;
-                            // If stats for this word are not already in statsData (from localStorage),
-                            // then initialize with stats from the file.
+                            // Initialize stats for this word from the file ONLY IF
+                            // it wasn't already loaded from localStorage (via statsData).
                             if (!statsData[key]) {
                                 statsData[key] = statsFromFile;
                             }
@@ -832,7 +841,7 @@ excited - 신난`;
                     }
                 }
                 
-                updateDaySelections();
+                updateDaySelections(); // Populate Day selection dropdowns in settings
                 updateAchievementDisplay();
                 
                 console.log('단어 데이터가 성공적으로 로드되었습니다!');
@@ -843,10 +852,14 @@ excited - 신난`;
             }
         }
 
+        // Parses a single line from the vocabulary file to extract English word, Korean meaning, and optional stats.
+        // Example line: "apple - 사과 | 1,2,0" (eng - kor | study,quiz,correct stats)
+        // Returns [eng, kor, stats_array] or [null, null, [0,0,0]] if parsing fails.
         function parseVocabLine(line) {
-            let main = line;
-            let stats = [0, 0, 0];
+            let main = line; // Part of the line with eng - kor
+            let stats = [0, 0, 0]; // Default stats
 
+            // Check if stats are provided (separated by '|')
             if (line.includes('|')) {
                 const parts = line.split('|');
                 main = parts[0].trim();
