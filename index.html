@@ -16,12 +16,16 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
             max-width: 600px;
             margin: 0 auto;
             background: white;
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
@@ -38,6 +42,7 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
 
         .header h1 {
@@ -50,13 +55,23 @@
             background: rgba(255,255,255,0.2);
             padding: 10px 20px;
             border-radius: 25px;
+            font-weight: 600;
             font-size: 1.2em;
-            font-weight: bold;
             backdrop-filter: blur(10px);
         }
 
         .content {
             padding: 30px;
+        }
+
+        /* 설정 화면 스타일 */
+        .settings-view {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .settings-section {
@@ -194,6 +209,11 @@
         .btn-secondary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* 학습/퀴즈 화면 스타일 */
+        .game-view {
+            animation: fadeIn 0.3s ease-out;
         }
 
         .game-area {
@@ -348,7 +368,16 @@
             cursor: not-allowed;
         }
 
+        .btn-back {
+            background: #718096;
+            color: white;
+            margin-top: 20px;
+        }
 
+        .btn-back:hover {
+            background: #4a5568;
+            transform: translateY(-1px);
+        }
 
         @media (max-width: 600px) {
             .container {
@@ -386,6 +415,138 @@
         .hidden {
             display: none !important;
         }
+
+        /* Quiz Mode Specific Styles for Reduced Whitespace */
+        #game-area {
+            padding: 15px 10px; /* Reduced padding: 15px top/bottom, 10px left/right */
+        }
+
+        .quiz-question-display { /* Container for the question text */
+            margin-bottom: 15px; /* Space after the question block */
+        }
+        .quiz-question-display h3 {
+            margin-top: 0;
+            margin-bottom: 5px; /* Reduced margin for h3 */
+            font-size: 1.25em;  /* Slightly smaller font for question title */
+        }
+        .quiz-question-display p {
+            margin-bottom: 5px; /* Reduced margin for question paragraph */
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .quiz-options-list { /* Container for answer choice buttons */
+            display: flex;
+            flex-direction: column;
+            gap: 6px; /* Reduced space between option buttons */
+            margin-bottom: 15px; /* Space after the list of options */
+        }
+        .quiz-options-list button { /* Styling for each answer option button */
+            padding: 10px 15px; /* Significantly reduced padding */
+            font-size: 0.95em;  /* Slightly smaller font for options */
+            width: 100%;
+            text-align: left;
+            box-sizing: border-box;
+            /* Retain existing .btn styles for border-radius, transitions, etc.
+               If options don't use .btn, add those styles here. */
+        }
+
+        #quiz-action-buttons { /* Container for Submit/Next Question buttons (referenced by ID) */
+            margin-top: 10px; /* Reduced space above these action buttons */
+            display: flex;
+            gap: 8px; /* Reduced space between buttons */
+            justify-content: flex-end;
+        }
+        #quiz-action-buttons .btn { /* If these buttons use the general .btn class */
+            padding: 10px 18px; /* Reduced padding for these specific action buttons */
+            font-size: 0.95em;
+        }
+
+        .quiz-feedback { /* Area for showing correct/incorrect feedback */
+            margin-top: 10px;
+            padding: 8px;
+            font-size: 0.9em;
+            min-height: auto; /* Allow it to shrink */
+            border-radius: 6px;
+        }
+        .quiz-feedback.correct { background-color: #e6fffa; color: #23765a; border: 1px solid #a8e3d3; }
+        .quiz-feedback.incorrect { background-color: #fff5f5; color: #c53030; border: 1px solid #fcb1b1; }
+
+        /* Additional styles to hide images and reduce more whitespace in quiz mode */
+        .quiz-mode .header {
+            padding: 15px; /* Reduced header padding in quiz mode */
+        }
+        
+        .quiz-mode .header h1 {
+            font-size: 1.8em; /* Smaller title in quiz mode */
+            margin-bottom: 5px;
+        }
+        
+        .quiz-mode .achievement-score {
+            padding: 5px 15px; /* Smaller achievement score area */
+            font-size: 1em;
+        }
+        
+        .quiz-mode .content {
+            padding: 15px; /* Reduced content padding */
+        }
+        
+        /* Hide images in quiz mode */
+        .quiz-mode img, 
+        .quiz-mode .header img,
+        .quiz-mode .content img {
+            display: none !important;
+        }
+        
+        /* Reduce container padding in quiz mode */
+        .quiz-mode .container {
+            padding: 10px;
+            max-width: 550px; /* Slightly smaller container */
+        }
+        
+        /* Make quiz options more compact */
+        .quiz-mode #quizOptions {
+            margin-bottom: 10px;
+        }
+        
+        .quiz-mode .quiz-option {
+            padding: 8px 12px;
+            margin-bottom: 5px;
+        }
+        
+        /* Reduce status text size */
+        .quiz-mode #statusText {
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        /* 새로운 헤더 설정 버튼 스타일 */
+        .header-back-btn {
+            position: absolute;
+            top: 20px; /* 위치 조정 */
+            right: 20px; /* 위치 조정 */
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px; /* 아이콘 크기 */
+            line-height: 40px; /* 아이콘 수직 중앙 정렬 */
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .header-back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .header-back-btn.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -395,87 +556,91 @@
             <div class="achievement-score">
                 🏆 성취점수: <span id="achievementScore">0</span>
             </div>
+            <!-- 새로운 헤더 설정 아이콘 버튼 -->
+            <button id="headerBackToSettingsBtn" class="header-back-btn hidden" onclick="backToSettings()">⚙️</button>
         </div>
 
         <div class="content">
-
-
-            <!-- 학습 설정 -->
-            <div class="settings-section">
-                <div class="settings-title">⚙️ 학습 설정</div>
-                
-                <div class="form-group">
-                    <label>학습 모드:</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" name="learningMode" value="single" id="modeSingle" checked>
-                            <label for="modeSingle">일별 학습</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" name="learningMode" value="comprehensive" id="modeComprehensive">
-                            <label for="modeComprehensive">종합 학습</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="singleDay">학습할 Day:</label>
-                    <select id="singleDay"></select>
+            <!-- 설정 화면 -->
+            <div class="settings-view" id="settingsView">
+                <div class="settings-section">
+                    <div class="settings-title">⚙️ 학습 설정</div>
                     
-                    <label for="endDay" class="hidden" id="endDayLabel">종료 Day (시작: Day 1):</label>
-                    <select id="endDay" class="hidden"></select>
-                </div>
+                    <div class="form-group">
+                        <label>학습 모드:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="learningMode" value="single" id="modeSingle" checked>
+                                <label for="modeSingle">일별 학습</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="learningMode" value="comprehensive" id="modeComprehensive">
+                                <label for="modeComprehensive">종합 학습</label>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label>퀴즈 유형:</label>
-                    <div class="quiz-type-grid">
-                        <div class="quiz-type-option selected" data-type="eng_to_kor">
-                            <input type="radio" name="quizType" value="eng_to_kor" checked hidden>
-                            영어 → 한글<br>(객관식)
-                        </div>
-                        <div class="quiz-type-option" data-type="kor_to_eng">
-                            <input type="radio" name="quizType" value="kor_to_eng" hidden>
-                            한글 → 영어<br>(객관식)
-                        </div>
-                        <div class="quiz-type-option" data-type="fill_blank">
-                            <input type="radio" name="quizType" value="fill_blank" hidden>
-                            빈칸 채우기<br>(주관식)
-                        </div>
-                        <div class="quiz-type-option" data-type="mixed">
-                            <input type="radio" name="quizType" value="mixed" hidden>
-                            종합 랜덤<br>(혼합)
+                    <div class="form-group">
+                        <label for="singleDay">학습할 Day:</label>
+                        <select id="singleDay"></select>
+                        
+                        <label for="endDay" class="hidden" id="endDayLabel">종료 Day (시작: Day 1):</label>
+                        <select id="endDay" class="hidden"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>퀴즈 유형:</label>
+                        <div class="quiz-type-grid">
+                            <div class="quiz-type-option selected" data-type="eng_to_kor">
+                                <input type="radio" name="quizType" value="eng_to_kor" checked hidden>
+                                영어 → 한글<br>(객관식)
+                            </div>
+                            <div class="quiz-type-option" data-type="kor_to_eng">
+                                <input type="radio" name="quizType" value="kor_to_eng" hidden>
+                                한글 → 영어<br>(객관식)
+                            </div>
+                            <div class="quiz-type-option" data-type="fill_blank">
+                                <input type="radio" name="quizType" value="fill_blank" hidden>
+                                빈칸 채우기<br>(주관식)
+                            </div>
+                            <div class="quiz-type-option" data-type="mixed">
+                                <input type="radio" name="quizType" value="mixed" hidden>
+                                종합 랜덤<br>(혼합)
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- 모드 선택 버튼 -->
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="startStudyMode()">
+                        📖 단어 학습 (플래시카드)
+                    </button>
+                    <button class="btn btn-secondary" onclick="startQuizMode()">
+                        🧠 단어 퀴즈
+                    </button>
+                </div>
             </div>
 
-            <!-- 모드 선택 버튼 -->
-            <div class="buttons">
-                <button class="btn btn-primary" onclick="startStudyMode()">
-                    📖 단어 학습 (플래시카드)
-                </button>
-                <button class="btn btn-secondary" onclick="startQuizMode()">
-                    🧠 단어 퀴즈
-                </button>
-            </div>
-
-            <!-- 게임 영역 -->
-            <div class="game-area">
-                <div class="status-text" id="statusText">모드를 선택하세요</div>
-                <div class="word-display" id="wordDisplay"></div>
-                <div class="meaning-display" id="meaningDisplay"></div>
-                <div class="feedback" id="feedback"></div>
-                
-                <!-- 퀴즈 옵션 (객관식) -->
-                <div class="quiz-options hidden" id="quizOptions"></div>
-                
-                <!-- 답 입력 (주관식) -->
-                <input type="text" class="answer-input hidden" id="answerInput" placeholder="답을 입력하세요">
-                
-                <!-- 게임 버튼 -->
-                <div class="game-buttons">
-                    <button class="btn-action btn-submit hidden" id="actionButton1"></button>
-                    <button class="btn-action btn-next hidden" id="actionButton2"></button>
+            <!-- 학습/퀴즈 화면 -->
+            <div class="game-view hidden" id="gameView">
+                <div class="game-area">
+                    <div class="status-text" id="statusText">모드를 선택하세요</div>
+                    <div class="word-display" id="wordDisplay"></div>
+                    <div class="meaning-display" id="meaningDisplay"></div>
+                    <div class="feedback" id="feedback"></div>
+                    
+                    <!-- 퀴즈 옵션 (객관식) -->
+                    <div class="quiz-options hidden" id="quizOptions"></div>
+                    
+                    <!-- 답 입력 (주관식) -->
+                    <input type="text" class="answer-input hidden" id="answerInput" placeholder="답을 입력하세요">
+                    
+                    <!-- 게임 버튼 -->
+                    <div class="game-buttons">
+                        <button class="btn-action btn-submit hidden" id="actionButton1"></button>
+                        <button class="btn-action btn-next hidden" id="actionButton2"></button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -525,6 +690,36 @@
                     document.getElementById('actionButton1').click();
                 }
             });
+        }
+
+        // 화면 전환 함수
+        function showGameView() {
+            document.getElementById('settingsView').classList.add('hidden');
+            document.getElementById('gameView').classList.remove('hidden');
+        }
+
+        function showSettingsView() {
+            document.getElementById('gameView').classList.add('hidden');
+            document.getElementById('settingsView').classList.remove('hidden');
+        }
+
+        function backToSettings() {
+            // 게임 상태 초기화
+            quizActive = false;
+            studyActive = false;
+            currentWordIndex = 0;
+            score = 0;
+            
+            // 퀴즈 모드 클래스 제거
+            document.querySelector('.container').classList.remove('quiz-mode');
+            console.log('퀴즈 모드 클래스 제거됨:', !document.querySelector('.container').classList.contains('quiz-mode'));
+            
+            // 새로운 헤더 설정 버튼 숨기기
+            document.getElementById('headerBackToSettingsBtn').classList.add('hidden');
+            
+            // 화면 초기화
+            clearGameArea();
+            showSettingsView();
         }
 
         async function loadVocabularyFile() {
@@ -719,16 +914,18 @@ excited - 신난`;
             if (!result) return;
             
             currentDayWords = [...result.words];
-            shuffleArray(currentDayWords);
             currentWordIndex = 0;
             studyActive = true;
             quizActive = false;
             currentDayInfo = result.dayInfo;
             
-            clearGameArea();
-            document.getElementById('statusText').textContent = `--- ${currentDayInfo} 단어 학습 (${currentDayWords.length}개) ---`;
+            // 화면 전환
+            showGameView();
+            updateAchievementDisplay();
             
-            setupStudyButtons();
+            // 새로운 헤더 설정 버튼 표시
+            document.getElementById('headerBackToSettingsBtn').classList.remove('hidden');
+            
             displayStudyWord();
         }
 
@@ -801,7 +998,16 @@ excited - 신난`;
             studyActive = false;
             currentDayInfo = result.dayInfo;
             
+            // 화면 전환
+            showGameView();
             updateAchievementDisplay();
+            
+            // 퀴즈 모드 클래스 추가
+            document.querySelector('.container').classList.add('quiz-mode');
+            console.log('퀴즈 모드 클래스 추가됨:', document.querySelector('.container').classList.contains('quiz-mode'));
+            
+            // 새로운 헤더 설정 버튼 표시
+            document.getElementById('headerBackToSettingsBtn').classList.remove('hidden');
             
             activeQuestionType = document.querySelector('input[name="quizType"]:checked').value;
             displayQuizQuestion();
