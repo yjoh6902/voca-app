@@ -379,6 +379,20 @@
             transform: translateY(-1px);
         }
 
+        #mainButtonsContainer {
+            display: flex;
+            justify-content: space-around; /* Or space-between, or use gap */
+            align-items: center;
+            padding: 20px 0; /* Add some padding */
+            gap: 15px; /* Space between buttons */
+        }
+
+        #mainButtonsContainer .btn { /* Style for buttons within the main container */
+            flex-grow: 1; /* Allow buttons to grow and fill space if needed */
+            text-align: center;
+        }
+
+
         @media (max-width: 600px) {
             .container {
                 margin: 10px;
@@ -547,6 +561,13 @@
         .header-back-btn.hidden {
             display: none;
         }
+
+        .speaker-icon {
+            font-size: 0.8em; /* Adjust as needed */
+            margin-left: 8px;
+            cursor: pointer;
+            display: inline-block; /* To allow margin and proper placement */
+        }
     </style>
 </head>
 <body>
@@ -563,62 +584,64 @@
         <div class="content">
             <!-- 설정 화면 -->
             <div class="settings-view" id="settingsView">
-                <div class="settings-section">
-                    <div class="settings-title">⚙️ 학습 설정</div>
-                    
-                    <div class="form-group">
-                        <label>학습 모드:</label>
-                        <div class="radio-group">
-                            <div class="radio-option">
-                                <input type="radio" name="learningMode" value="single" id="modeSingle" checked>
-                                <label for="modeSingle">일별 학습</label>
-                            </div>
-                            <div class="radio-option">
-                                <input type="radio" name="learningMode" value="comprehensive" id="modeComprehensive">
-                                <label for="modeComprehensive">종합 학습</label>
+                <!-- Main Three Buttons -->
+                <div id="mainButtonsContainer">
+                    <button id="mainSettingsBtn" class="btn btn-primary">⚙️ 설정</button>
+                    <button id="mainLearnBtn" class="btn btn-primary" onclick="startStudyMode()">📖 학습</button>
+                    <button id="mainQuizBtn" class="btn btn-secondary" onclick="startQuizMode()">🧠 퀴즈</button>
+                </div>
+
+                <!-- Detailed Settings (initially hidden) -->
+                <div id="detailedSettingsContainer" class="hidden">
+                    <div class="settings-section">
+                        <div class="settings-title">⚙️ 학습 설정</div>
+
+                        <div class="form-group">
+                            <label>학습 모드:</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" name="learningMode" value="single" id="modeSingle" checked>
+                                    <label for="modeSingle">일별 학습</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" name="learningMode" value="comprehensive" id="modeComprehensive">
+                                    <label for="modeComprehensive">종합 학습</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="singleDay">학습할 Day:</label>
-                        <select id="singleDay"></select>
-                        
-                        <label for="endDay" class="hidden" id="endDayLabel">종료 Day (시작: Day 1):</label>
-                        <select id="endDay" class="hidden"></select>
-                    </div>
+                        <div class="form-group">
+                            <label for="singleDay">학습할 Day:</label>
+                            <select id="singleDay"></select>
 
-                    <div class="form-group">
-                        <label>퀴즈 유형:</label>
-                        <div class="quiz-type-grid">
-                            <div class="quiz-type-option selected" data-type="eng_to_kor">
-                                <input type="radio" name="quizType" value="eng_to_kor" checked hidden>
-                                영어 → 한글<br>(객관식)
-                            </div>
-                            <div class="quiz-type-option" data-type="kor_to_eng">
-                                <input type="radio" name="quizType" value="kor_to_eng" hidden>
-                                한글 → 영어<br>(객관식)
-                            </div>
-                            <div class="quiz-type-option" data-type="fill_blank">
-                                <input type="radio" name="quizType" value="fill_blank" hidden>
-                                빈칸 채우기<br>(주관식)
-                            </div>
-                            <div class="quiz-type-option" data-type="mixed">
-                                <input type="radio" name="quizType" value="mixed" hidden>
-                                종합 랜덤<br>(혼합)
-                            </div>
+                            <label for="endDay" class="hidden" id="endDayLabel">종료 Day (시작: Day 1):</label>
+                            <select id="endDay" class="hidden"></select>
                         </div>
-                    </div> <!-- closes form-group for 퀴즈 유형 -->
-                </div> <!-- closes settings-section -->
 
-                <!-- 모드 선택 버튼 -->
-                <div class="buttons">
-                    <button class="btn btn-primary" onclick="startStudyMode()">
-                        📖 단어 학습
-                    </button>
-                    <button class="btn btn-secondary" onclick="startQuizMode()">
-                        🧠 단어 퀴즈
-                    </button>
+                        <div class="form-group">
+                            <label>퀴즈 유형:</label>
+                            <div class="quiz-type-grid">
+                                <div class="quiz-type-option selected" data-type="eng_to_kor">
+                                    <input type="radio" name="quizType" value="eng_to_kor" checked hidden>
+                                    영어 → 한글<br>(객관식)
+                                </div>
+                                <div class="quiz-type-option" data-type="kor_to_eng">
+                                    <input type="radio" name="quizType" value="kor_to_eng" hidden>
+                                    한글 → 영어<br>(객관식)
+                                </div>
+                                <div class="quiz-type-option" data-type="fill_blank">
+                                    <input type="radio" name="quizType" value="fill_blank" hidden>
+                                    빈칸 채우기<br>(주관식)
+                                </div>
+                                <div class="quiz-type-option" data-type="mixed">
+                                    <input type="radio" name="quizType" value="mixed" hidden>
+                                    종합 랜덤<br>(혼합)
+                                </div>
+                            </div>
+                        </div> <!-- closes form-group for 퀴즈 유형 -->
+                    </div> <!-- closes settings-section -->
+
+                    <button id="backToMainButtonsBtn" class="btn btn-back" style="width:100%; margin-bottom:15px;">뒤로가기</button>
                 </div>
             </div> <!-- closes settings-view -->
 
@@ -689,6 +712,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners(); // Set up UI event handlers
             loadStatsFromStorage(); // Load user statistics and achievement score from localStorage
+            showMainButtons(); // Ensure main buttons are shown initially
             loadVocabularyFile(); // Load vocabulary data from file (or use sample data if not found)
             updateAchievementDisplay(); // Display the loaded achievement score
         });
@@ -699,6 +723,10 @@
                 radio.addEventListener('change', updateDaySelectionWidgets);
             });
             
+            // Main navigation buttons
+            document.getElementById('mainSettingsBtn').addEventListener('click', showDetailedSettings);
+            document.getElementById('backToMainButtonsBtn').addEventListener('click', showMainButtons);
+
             // 퀴즈 유형 선택
             document.querySelectorAll('.quiz-type-option').forEach(option => {
                 option.addEventListener('click', function() {
@@ -719,14 +747,26 @@
 
         // 화면 전환 함수
         function showGameView() {
-            document.getElementById('settingsView').classList.add('hidden');
+            document.getElementById('settingsView').classList.add('hidden'); // Hide the entire settings area (main buttons and detailed)
             document.getElementById('gameView').classList.remove('hidden');
         }
 
-        function showSettingsView() {
-            document.getElementById('gameView').classList.add('hidden');
+        // New function to show detailed settings
+        function showDetailedSettings() {
+            document.getElementById('mainButtonsContainer').classList.add('hidden');
+            document.getElementById('detailedSettingsContainer').classList.remove('hidden');
+            // Ensure settingsView (parent) is visible if it was somehow hidden
             document.getElementById('settingsView').classList.remove('hidden');
         }
+
+        // New function to show main buttons
+        function showMainButtons() {
+            document.getElementById('detailedSettingsContainer').classList.add('hidden');
+            document.getElementById('mainButtonsContainer').classList.remove('hidden');
+            // Ensure settingsView (parent) is visible
+            document.getElementById('settingsView').classList.remove('hidden');
+        }
+
 
         function backToSettings() {
             // 게임 상태 초기화
@@ -744,7 +784,11 @@
             
             // 화면 초기화
             clearGameArea();
-            showSettingsView();
+            // showSettingsView(); // Old call
+            showMainButtons(); // New Call: Show the main three-button screen
+
+            // Ensure settingsView itself is visible if it was hidden
+            document.getElementById('settingsView').classList.remove('hidden');
         }
 
         async function loadVocabularyFile() {
@@ -999,10 +1043,30 @@ excited - 신난`;
         function displayStudyWord() {
             if (currentWordIndex < currentDayWords.length) {
                 const [eng, kor] = currentDayWords[currentWordIndex];
-                updateStats(eng, kor, 0); // 학습횟수 증가
-                const stats = getStats(eng, kor); // Now this function will exist and work
+                updateStats(eng, kor, 0);
+                const stats = getStats(eng, kor);
+
+                const wordDisplayElement = document.getElementById('wordDisplay');
+                wordDisplayElement.innerHTML = ''; // Clear previous content
+
+                // Display word number and English word
+                const wordText = document.createTextNode(`${currentWordIndex + 1}. ${eng} `); // Add space for icon
+                wordDisplayElement.appendChild(wordText);
+
+                // Add speaker icon only in study mode
+                if (studyActive && !quizActive) { // Ensure it's study mode
+                    const speakerIcon = document.createElement('span');
+                    speakerIcon.textContent = '🔊'; // Speaker emoji or use an icon class
+                    speakerIcon.className = 'speaker-icon'; // Apply CSS class
+                    speakerIcon.title = 'Pronounce word'; // Tooltip
+
+                    speakerIcon.onclick = function(event) {
+                        event.stopPropagation(); // Prevent any parent click events
+                        pronounceWord(eng);
+                    };
+                    wordDisplayElement.appendChild(speakerIcon);
+                }
                 
-                document.getElementById('wordDisplay').textContent = `${currentWordIndex + 1}. ${eng}`;
                 document.getElementById('meaningDisplay').textContent = `(학습:${stats[0]}, 퀴즈:${stats[1]}, 정답:${stats[2]})`;
                 document.getElementById('feedback').textContent = '';
                 document.getElementById('statusText').textContent = `--- ${currentDayInfo} 학습 중 (${currentWordIndex + 1}/${currentDayWords.length}) ---`;
@@ -1320,6 +1384,22 @@ excited - 신난`;
                 [array[i], array[j]] = [array[j], array[i]];
             }
             return array;
+        }
+
+        function pronounceWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US'; // Set language to US English
+                // Optional: Adjust rate, pitch, volume
+                // utterance.rate = 1.0;
+                // utterance.pitch = 1.0;
+                // utterance.volume = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn('Web Speech API (Text-to-Speech) not supported in this browser.');
+                // Optionally, provide a fallback or user message here
+                alert('이 브라우저에서는 단어 발음 기능을 지원하지 않습니다.');
+            }
         }
     </script>
 </body>
